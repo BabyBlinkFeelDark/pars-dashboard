@@ -1,3 +1,4 @@
+import logging
 import time
 from dotenv import load_dotenv
 import requests
@@ -10,6 +11,17 @@ from src.login import login
 from src.utils import wait_for_elements
 from src.parser import extract_order_data
 from src.cleaner import run_scheduler
+
+
+logging.basicConfig(
+    level=logging.DEBUG,  # Уровень логирования: DEBUG (можно изменить на INFO или ERROR)
+    format="%(asctime)s - %(levelname)s - %(message)s",  # Формат сообщений
+    handlers=[
+        logging.StreamHandler(),  # Выводить в консоль
+        logging.FileHandler("app.log")  # Логирование в файл
+    ]
+)
+
 
 load_dotenv()
 

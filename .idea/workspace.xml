@@ -6,7 +6,9 @@
   <component name="ChangeListManager">
     <list default="true" id="dcb54d01-dff3-4abf-ad3e-e53af91387ed" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/db.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/db.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/main.py" beforeDir="false" afterPath="$PROJECT_DIR$/main.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/poetry.lock" beforeDir="false" afterPath="$PROJECT_DIR$/poetry.lock" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/pyproject.toml" beforeDir="false" afterPath="$PROJECT_DIR$/pyproject.toml" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -51,31 +53,31 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent">{
-  &quot;keyToString&quot;: {
-    &quot;Python tests.Python tests in test_mask.py.executor&quot;: &quot;Run&quot;,
-    &quot;Python tests.Python tests in test_widget.py.executor&quot;: &quot;Run&quot;,
-    &quot;Python tests.pytest for test_db.test_courier_data_creation.executor&quot;: &quot;Run&quot;,
-    &quot;Python tests.pytest for test_db.test_multiple_sessions.executor&quot;: &quot;Run&quot;,
-    &quot;Python tests.pytest for test_db.test_no_sessions_if_not_completed.executor&quot;: &quot;Run&quot;,
-    &quot;Python tests.pytest for test_db.test_session_count_and_time.executor&quot;: &quot;Run&quot;,
-    &quot;Python tests.pytest in anti_bot.py.executor&quot;: &quot;Run&quot;,
-    &quot;Python tests.pytest in test_db.py.executor&quot;: &quot;Run&quot;,
-    &quot;Python.anti_bot.executor&quot;: &quot;Run&quot;,
-    &quot;Python.authorization.executor&quot;: &quot;Run&quot;,
-    &quot;Python.cleaner.executor&quot;: &quot;Run&quot;,
-    &quot;Python.db.executor&quot;: &quot;Run&quot;,
-    &quot;Python.export.executor&quot;: &quot;Run&quot;,
-    &quot;Python.main.executor&quot;: &quot;Run&quot;,
-    &quot;Python.mask.executor&quot;: &quot;Run&quot;,
-    &quot;Python.processing.executor&quot;: &quot;Run&quot;,
-    &quot;Python.widget.executor&quot;: &quot;Run&quot;,
-    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
-    &quot;git-widget-placeholder&quot;: &quot;d6c0c138&quot;,
-    &quot;last_opened_file_path&quot;: &quot;/home/babyblinkfeeldark/PycharmProjects/samocat_bot&quot;,
-    &quot;settings.editor.selected.configurable&quot;: &quot;com.jetbrains.python.configuration.PyActiveSdkModuleConfigurable&quot;
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    "Python tests.Python tests in test_mask.py.executor": "Run",
+    "Python tests.Python tests in test_widget.py.executor": "Run",
+    "Python tests.pytest for test_db.test_courier_data_creation.executor": "Run",
+    "Python tests.pytest for test_db.test_multiple_sessions.executor": "Run",
+    "Python tests.pytest for test_db.test_no_sessions_if_not_completed.executor": "Run",
+    "Python tests.pytest for test_db.test_session_count_and_time.executor": "Run",
+    "Python tests.pytest in anti_bot.py.executor": "Run",
+    "Python tests.pytest in test_db.py.executor": "Run",
+    "Python.anti_bot.executor": "Run",
+    "Python.authorization.executor": "Run",
+    "Python.cleaner.executor": "Run",
+    "Python.db.executor": "Run",
+    "Python.export.executor": "Run",
+    "Python.main.executor": "Run",
+    "Python.mask.executor": "Run",
+    "Python.processing.executor": "Run",
+    "Python.widget.executor": "Run",
+    "RunOnceActivity.ShowReadmeOnStart": "true",
+    "git-widget-placeholder": "bc95c8a1",
+    "last_opened_file_path": "/home/babyblinkfeeldark/PycharmProjects/samocat_bot",
+    "settings.editor.selected.configurable": "com.jetbrains.python.configuration.PyActiveSdkModuleConfigurable"
   }
-}</component>
+}]]></component>
   <component name="RunManager">
     <configuration name="main" type="PythonConfigurationType" factoryName="Python" nameIsGenerated="true">
       <module name="homework" />
