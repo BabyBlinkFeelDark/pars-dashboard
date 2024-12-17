@@ -4,6 +4,22 @@ from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 
 def login(driver, username, password):
+    """
+    Осуществляет авторизацию на веб-странице, заполняя поля для ввода логина и пароля,
+    и нажимает кнопку логина.
+
+    Args:
+        driver (selenium.webdriver.Chrome): Объект WebDriver для взаимодействия с браузером.
+        username (str): Имя пользователя для входа.
+        password (str): Пароль для входа.
+
+    Waits:
+        WebDriverWait: Ожидание появления полей ввода логина и пароля, а также кнопки для отправки формы.
+        time.sleep: Пауза после выполнения логина для ожидания появления токена в куках.
+
+    Prints:
+        str: Сообщение о успешной авторизации.
+    """
     wait = WebDriverWait(driver, 10)
 
     # Ожидание полей для логина

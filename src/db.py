@@ -1,27 +1,42 @@
 import os
-
 import psycopg2
 from psycopg2.extras import RealDictCursor
 from datetime import datetime, timedelta
 import pytz
 from dotenv import load_dotenv
 
-
-local_tz = pytz.timezone('Europe/Moscow')
+# Установите временную зону
+local_tz = pytz.timezone('Europe/Moscow')  # Укажите ваш часовой пояс
 load_dotenv()
 
+# Получение текущего времени в вашем часовом поясе
 def get_local_time():
+    """
+    Возвращает текущее время в часовом поясе 'Europe/Moscow'.
+
+    Returns:
+        datetime: Текущее время в указанном часовом поясе.
+    """
     return datetime.now(local_tz)
 
 
 # Подключение к базе данных PostgreSQL
 def get_connection():
+    """
+    Устанавливает соединение с базой данных PostgreSQL с использованием
+    параметров, загруженных из .env файла.
+
+    Returns:
+        psycopg2.connection: Объект подключения к базе данных.
+    Raises:
+        Exception: Если не удается подключиться к базе данных, возбуждается исключение.
+    """
     try:
         conn = psycopg2.connect(
-            dbname=os.getenv("DBNAME"),
-            user=os.getenv("USER_NAME"),
-            password=os.getenv("PASSWORD"),
-            host=os.getenv("HOST"),
+            dbname=os.getenv("DBNAME"),  # Убедитесь, что имя базы данных правильное
+            user=os.getenv("USER_NAME"),  # Имя пользователя, которое вы создали
+            password=os.getenv("PASSWORD"),  # Замените на ваш реальный пароль
+            host=os.getenv("HOST"),  # Локально
             port=os.getenv("PORT")
         )
         print("Подключение к базе данных успешно!")  # Сообщение о успешном подключении
@@ -32,6 +47,14 @@ def get_connection():
 
 # Создание таблиц с добавлением столбца deliveries
 def init_db():
+    """
+    Инициализирует базу данных, создавая таблицы для курьеров и заказов,
+    если они еще не существуют.
+
+    Creates:
+        - couriers: Таблица курьеров с полями courier_id, courier_name и last_update.
+        - orders: Таблица заказов с полями order_id, courier_id, time_taken, cur_time.
+    """
     with get_connection() as conn:
         with conn.cursor() as cur:
             cur.execute("""
@@ -51,45 +74,20 @@ def init_db():
             """)
             conn.commit()
 
-# Логика для расчета сессий и времени
-def calculate_sessions_and_times(courier_id):
-    with get_connection() as conn:
-        with conn.cursor() as cur:
-            # Получаем все завершенные заказы для курьера, где time_taken != None
-            cur.execute("""
-                SELECT order_id, time_taken, cur_time
-                FROM orders
-                WHERE courier_id = %s AND time_taken IS NOT NULL
-                ORDER BY cur_time
-            """, (courier_id,))
-
-            orders = cur.fetchall()
-
-            # Если заказов нет, возвращаем 0 сессий и времени
-            if not orders:
-                return 0, 0
-
-            total_sessions = 0
-            total_time = 0
-
-            for order in orders:
-                total_sessions += 1
-                total_time += order[1]  # time_taken
-
-            # Вычисляем среднее время, если сессии были
-            avg_time = total_time / total_sessions if total_sessions > 0 else 0
-
-            # Обновляем данные о суммарном времени и среднем времени для курьера
-            cur.execute("""
-                UPDATE couriers
-                SET del_sum = %s, avg_time = %s, deliveries = %s, last_update = %s
-                WHERE courier_id = %s
-            """, (total_time, avg_time, total_sessions, get_local_time(), courier_id))
-
-            conn.commit()
-
 # Сохранение или обновление данных курьера и заказа
 def save_courier_data(courier_name, time_taken):
+    """
+    Сохраняет или обновляет данные курьера и его последнего заказа в базе данных.
+    Если курьер уже существует, обновляется информация о последнем заказе.
+    Если курьер не существует, создается новая запись.
+
+    Args:
+        courier_name (str): Имя курьера.
+        time_taken (float): Время, затраченное на заказ.
+
+    Prints:
+        str: Сообщения о выполненных действиях (добавление нового заказа, обновление и т. д.).
+    """
     with get_connection() as conn:
         with conn.cursor() as cur:
             # Находим ID курьера или создаем новую запись
@@ -98,8 +96,8 @@ def save_courier_data(courier_name, time_taken):
 
             if not courier:
                 cur.execute("""
-                    INSERT INTO couriers (courier_name, del_sum, avg_time, deliveries)
-                    VALUES (%s, 0, 0, 0)
+                    INSERT INTO couriers (courier_name)
+                    VALUES (%s)
                     RETURNING courier_id
                 """, (courier_name,))
                 courier_id = cur.fetchone()[0]
@@ -155,6 +153,15 @@ def save_courier_data(courier_name, time_taken):
 
 # Получение данных курьера
 def get_courier_data(courier_name):
+    """
+    Получает данные курьера по имени.
+
+    Args:
+        courier_name (str): Имя курьера.
+
+    Returns:
+        dict: Данные курьера в виде словаря, если курьер найден, иначе None.
+    """
     with get_connection() as conn:
         with conn.cursor(cursor_factory=RealDictCursor) as cur:
             cur.execute("SELECT * FROM couriers WHERE courier_name = %s", (courier_name,))
@@ -162,6 +169,12 @@ def get_courier_data(courier_name):
 
 # Получение всех курьеров
 def get_all_couriers():
+    """
+    Получает список всех курьеров из базы данных.
+
+    Returns:
+        list: Список словарей с данными всех курьеров.
+    """
     with get_connection() as conn:
         with conn.cursor(cursor_factory=RealDictCursor) as cur:
             cur.execute("SELECT * FROM couriers")
@@ -169,15 +182,27 @@ def get_all_couriers():
 
 # Получение всех заказов
 def get_all_orders():
+    """
+    Получает список всех заказов из базы данных.
+
+    Returns:
+        list: Список словарей с данными всех заказов.
+    """
     with get_connection() as conn:
         with conn.cursor(cursor_factory=RealDictCursor) as cur:
             cur.execute("SELECT * FROM orders")
             return cur.fetchall()
 
 def clear_tables():
+    """
+    Очищает таблицы 'couriers' и 'orders', удаляя все данные и сбрасывая идентификаторы.
+    Это действие сбрасывает состояние таблиц на чистое.
+
+    Prints:
+        str: Сообщение об очистке таблиц.
+    """
     with get_connection() as conn:
         with conn.cursor() as cur:
             cur.execute("TRUNCATE TABLE orders, couriers RESTART IDENTITY CASCADE;")  # Очистить таблицу orders
             conn.commit()
             print(f"Таблицы 'couriers' и 'orders' очищены в {get_local_time()}")
-

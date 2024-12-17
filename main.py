@@ -11,10 +11,23 @@ from src.utils import wait_for_elements
 from src.parser import extract_order_data
 from src.cleaner import run_scheduler
 
-
 load_dotenv()
+
+
 # Функция получения заголовков и куков
 def get_headers_and_cookies(driver):
+    """
+    Извлекает куки и заголовки для авторизации в API из браузера.
+
+    Args:
+        driver (selenium.webdriver.Chrome): Объект WebDriver для работы с браузером.
+
+    Returns:
+        tuple: Заголовки (headers) и куки (cookie_dict) для использования в запросах API.
+
+    Raises:
+        Exception: Если отсутствует cookie авторизации (auth_token или spid), выбрасывается исключение.
+    """
     cookies = driver.get_cookies()
     cookie_dict = {cookie['name']: cookie['value'] for cookie in cookies}
 
@@ -32,16 +45,37 @@ def get_headers_and_cookies(driver):
 
     return headers, cookie_dict
 
+
 # Функция запроса к API
 def fetch_warehouse_summary(headers, cookies):
+    """
+    Отправляет GET-запрос к API для получения сводной информации о складе.
+
+    Args:
+        headers (dict): Заголовки для авторизации в запросе.
+        cookies (dict): Куки для авторизации в запросе.
+
+    Returns:
+        int: Код состояния HTTP-ответа (например, 200 для успешного запроса).
+
+    Prints:
+        str: Ответ от API в случае успешного запроса.
+    """
     url = os.getenv("COOKER")
     response = requests.get(url, headers=headers, cookies=cookies)
     if response.status_code == 200:
         print("Успешный запрос:", response.json())
     return response.status_code
 
+
 # Основной процесс
 def create_driver():
+    """
+    Создаёт и конфигурирует объект WebDriver для работы с браузером.
+
+    Returns:
+        selenium.webdriver.Chrome: Объект WebDriver для браузера Chrome.
+    """
     chrome_options = Options()
     # Настройка пользовательского агента и отключение автоматизации
     # chrome_options.add_argument("--headless")  # Безголовый режим
@@ -53,6 +87,7 @@ def create_driver():
     driver = webdriver.Chrome(options=chrome_options)
     return driver
 
+
 driver = create_driver()
 
 # Шаг 1: Авторизация
@@ -60,13 +95,32 @@ driver.get(os.getenv("DASHBOARD_URL"))
 login(driver, os.getenv("DASHBOARD_USER"), os.getenv("DASHBOARD_PASSWORD"))
 time.sleep(5)
 
+
 # Сохранение куков в файл
 def save_cookies(driver, filename="cookies.pkl"):
+    """
+    Сохраняет куки, полученные из браузера, в файл для последующего использования.
+
+    Args:
+        driver (selenium.webdriver.Chrome): Объект WebDriver.
+        filename (str, optional): Имя файла для сохранения куков. По умолчанию "cookies.pkl".
+    """
     with open(filename, "wb") as file:
         pickle.dump(driver.get_cookies(), file)
 
+
 # Загрузка куков из файла
 def load_cookies(driver, filename="cookies.pkl"):
+    """
+    Загружает куки из файла и добавляет их в браузер.
+
+    Args:
+        driver (selenium.webdriver.Chrome): Объект WebDriver.
+        filename (str, optional): Имя файла для загрузки куков. По умолчанию "cookies.pkl".
+
+    Prints:
+        str: Сообщения об ошибках при загрузке куков.
+    """
     if os.path.exists(filename):
         try:
             with open(filename, "rb") as file:
@@ -79,6 +133,7 @@ def load_cookies(driver, filename="cookies.pkl"):
             print(f"Ошибка при загрузке куков: {e}")
     else:
         print("Файл куков не найден, потребуется заново войти в систему.")
+
 
 # Попытка загрузки куков, если они существуют
 load_cookies(driver)
@@ -99,7 +154,6 @@ try:
         # Пытаемся получить данные
         status_code = fetch_warehouse_summary(headers, cookies)
 
-
         # Ожидание появления новых заказов на веб-странице
         orders = wait_for_elements(driver, By.CLASS_NAME, "sc-hHvkSs")
 
@@ -107,11 +161,9 @@ try:
         for order in orders:
             extract_order_data(order)
 
-
         # Ожидание перед следующим запросом
         time.sleep(15)
         run_scheduler()
-
 
 except KeyboardInterrupt:
     print("Скрипт остановлен.")
